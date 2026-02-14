@@ -89,7 +89,7 @@ async def create_movie(
     try:
         movie = await crud.create_movie(db, data)
         return movie
-    except Exception:
+    except ValueError:
         raise HTTPException(
             status_code=400,
             detail="Invalid input data."
@@ -156,7 +156,7 @@ async def update_movie(
 
     try:
         await crud.update_movie(db, movie, data)
-    except Exception:
+    except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid input data."

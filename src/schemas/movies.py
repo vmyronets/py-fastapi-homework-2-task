@@ -4,7 +4,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Optional
 
 from database.models import MovieStatusEnum
-from pydantic_extra_types.country import CountryAlpha3
+from pydantic_extra_types.country import CountryAlpha3, CountryAlpha2
 
 
 class MovieBaseSchema(BaseModel):
@@ -15,14 +15,14 @@ class MovieBaseSchema(BaseModel):
     status: MovieStatusEnum
     budget: float = Field(ge=0)
     revenue: float = Field(ge=0)
-    country: str | CountryAlpha3
+    country: CountryAlpha2 | CountryAlpha3
     genres: list[str]
     actors: list[str]
     languages: list[str]
 
     @field_validator("date")
     @classmethod
-    def validate_date(cls, v):
+    def validate_date(cls, v: date) -> date:
         if v > date.today() + timedelta(days=365):
             raise ValueError("Date cannot be more than one year in the future")
         return v
@@ -32,7 +32,7 @@ class MovieCountrySchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    code: str | CountryAlpha3
+    code: CountryAlpha2 | CountryAlpha3
     name: str | None
 
 
@@ -68,6 +68,8 @@ class MovieListItemSchema(BaseModel):
 
 
 class MovieListResponseSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     movies: list[MovieListItemSchema]
     prev_page: str | None
     next_page: str | None
