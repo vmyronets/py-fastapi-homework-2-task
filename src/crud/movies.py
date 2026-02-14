@@ -171,12 +171,13 @@ async def update_movie(
     data: MovieUpdateSchema,
 ) -> None:
 
-    update_data = data.model_dump(exclude_unset=True)
+    update_data = data.model_dump(exclude_unset=True, exclude_none=True)
 
     for field, value in update_data.items():
         setattr(movie, field, value)
 
     await db.commit()
+    await db.refresh(movie)
 
 
 async def delete_movie(
